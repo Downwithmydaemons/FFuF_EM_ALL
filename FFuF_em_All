@@ -1,0 +1,59 @@
+#!/bin/bash
+
+cat << "EOF"
+____________ _   _______   ________  ___   ___   _      _       _ 
+|  ___|  ___| | | |  ___| |  ___|  \/  |  / _ \ | |    | |     | |
+| |_  | |_  | | | | |_    | |__ | .  . | / /_\ \| |    | |     | |
+|  _| |  _| | | | |  _|   |  __|| |\/| | |  _  || |    | |     | |
+| |   | |   | |_| | |     | |___| |  | | | | | || |____| |____ |_|
+\_|   \_|    \___/\_|     \____/\_|  |_/ \_| |_/\_____/\_____/ (_)
+EOF
+
+if [ "$1" == "" ]; then
+    echo "Please provide an IP or hostname."
+    exit 1
+fi
+
+if [ "$2" == "" ]; then
+    echo "Please declare if ffuf is [HTTP or HTTPS]"
+    exit 1
+fi
+
+if [ "$3" == "" ]; then
+    echo "Please declare if you wish to scan for VHOST [Y or N] (Requires target to be a domain)"
+    exit 1
+fi
+
+Target="$1"
+SSL="$2"
+VHost="$3"
+
+
+if [ $SSL == "HTTP" ] && [ $VHost == "N" ]; then
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories-lowercase.txt:FUZZ -u http://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-files-lowercase.txt:FUZZ -u http://$Target/FUZZ -fc 403
+fi
+
+if [ $SSL == "HTTP" ] && [ $VHost == "Y" ]; then
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories-lowercase.txt:FUZZ -u http://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-files-lowercase.txt:FUZZ -u http://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt:FUZZ -u http://$Target/ -H 'Host: FUZZ.'"$Target" -ac
+fi
+
+
+if [ $SSL == "HTTPS" ] && [ $VHost == "N" ]; then
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories-lowercase.txt:FUZZ -u https://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-files-lowercase.txt:FUZZ -u https://$Target/FUZZ -fc 403
+fi
+
+if [ $SSL == "HTTPS" ] && [ $VHost == "Y" ]; then
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories-lowercase.txt:FUZZ -u https://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-files-lowercase.txt:FUZZ -u https://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt:FUZZ -u https://$Target/ -H 'Host: FUZZ.'"$Target" -ac
+fi
