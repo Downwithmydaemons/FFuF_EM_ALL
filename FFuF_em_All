@@ -24,18 +24,24 @@ if [ "$3" == "" ]; then
     exit 1
 fi
 
+if [ "$4" == "" ]; then
+    echo "Please declare if you wish increase scope of the fuzz [Y or N]"
+    exit 1
+fi
+
 Target="$1"
 SSL="$2"
 VHost="$3"
+Scope="$4"
 
-
-if [ $SSL == "HTTP" ] && [ $VHost == "N" ]; then
+######HTTP######
+if [ $SSL == "HTTP" ] && [ $VHost == "N" ] && [ $Scope == "N" ]; then
     ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories-lowercase.txt:FUZZ -u http://$Target/FUZZ -fc 403
 
     ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-files-lowercase.txt:FUZZ -u http://$Target/FUZZ -fc 403
 fi
 
-if [ $SSL == "HTTP" ] && [ $VHost == "Y" ]; then
+if [ $SSL == "HTTP" ] && [ $VHost == "Y" ] && [ $Scope == "N" ]; then
     ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories-lowercase.txt:FUZZ -u http://$Target/FUZZ -fc 403
 
     ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-files-lowercase.txt:FUZZ -u http://$Target/FUZZ -fc 403
@@ -43,17 +49,50 @@ if [ $SSL == "HTTP" ] && [ $VHost == "Y" ]; then
     ffuf -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt:FUZZ -u http://$Target/ -H 'Host: FUZZ.'"$Target" -ac
 fi
 
-
-if [ $SSL == "HTTPS" ] && [ $VHost == "N" ]; then
+######HTTPS######
+if [ $SSL == "HTTPS" ] && [ $VHost == "N" ] && [ $Scope == "N" ]; then
     ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories-lowercase.txt:FUZZ -u https://$Target/FUZZ -fc 403
 
     ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-files-lowercase.txt:FUZZ -u https://$Target/FUZZ -fc 403
 fi
 
-if [ $SSL == "HTTPS" ] && [ $VHost == "Y" ]; then
+if [ $SSL == "HTTPS" ] && [ $VHost == "Y" ] && [ $Scope == "N" ]; then
     ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories-lowercase.txt:FUZZ -u https://$Target/FUZZ -fc 403
 
     ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-files-lowercase.txt:FUZZ -u https://$Target/FUZZ -fc 403
 
     ffuf -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt:FUZZ -u https://$Target/ -H 'Host: FUZZ.'"$Target" -ac
+fi
+
+######Large scope######
+
+######HTTP######
+
+if [ $SSL == "HTTP" ] && [ $VHost == "N" ] && [ $Scope == "Y" ]; then
+    ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt:FUZZ -u http://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt:FUZZ -u http://$Target/FUZZ -fc 403
+fi
+
+if [ $SSL == "HTTP" ] && [ $VHost == "Y" ] && [ $Scope == "Y" ]; then
+    ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt:FUZZ -u http://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt:FUZZ -u http://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt:FUZZ -u http://$Target/ -H 'Host: FUZZ.'"$Target" -ac
+fi
+
+######HTTPS######
+if [ $SSL == "HTTPS" ] && [ $VHost == "N" ] && [ $Scope == "Y" ]; then
+    ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt:FUZZ -u https://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt:FUZZ -u https://$Target/FUZZ -fc 403
+fi
+
+if [ $SSL == "HTTPS" ] && [ $VHost == "Y" ] && [ $Scope == "Y" ]; then
+    ffuf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt:FUZZ -u https://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt:FUZZ -u https://$Target/FUZZ -fc 403
+
+    ffuf -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt:FUZZ -u https://$Target/ -H 'Host: FUZZ.'"$Target" -ac
 fi
