@@ -4,22 +4,22 @@ FFuF bash wrapper to fuzz faster.
 ## Usage:
 ```bash
 FFuF_em_All x.x.x.x HTTP N
-#Directory and File Fuzz if HTTP IP
+#Directory and File Fuzz of an HTTP IP
 
 FFuF_em_All x.x.x.x HTTPS N
-#Directory and File Fuzz if HTTPS IP
+#Directory and File Fuzz of an HTTPS IP
 
 FFuF_em_All domain.local HTTP Y
-#Directory and File Fuzz if HTTP Domain with added Vhost fuzzing
+#Directory and File Fuzz of an HTTP Domain with added Vhost fuzzing
 
 FFuF_em_All domain.local HTTP N
-#Directory and File Fuzz if HTTP Domain
+#Directory and File Fuzz of an HTTP Domain
 
 FFuF_em_All domain.local HTTPS Y
-#Directory and File Fuzz if HTTPS Domain with added Vhost fuzzing
+#Directory and File Fuzz of an HTTPS Domain with added Vhost fuzzing
 
 FFuF_em_All domain.local HTTPS N
-#Directory and File Fuzz if HTTPS Domain
+#Directory and File Fuzz of an HTTPS Domain
 ```
 
 ## Example:
